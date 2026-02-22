@@ -1,53 +1,42 @@
 package Server;
 
 import java.io.*;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class MainServer {
+
     public static void main(String[] args) {
         System.out.println("SERVER: Avvio server...");
 
         try (ServerSocket server = new ServerSocket(3000)) {
             System.out.println("SERVER: In attesa di un client...");
+
             Socket clientSocket = server.accept();
             System.out.println("SERVER: Client connesso: " + clientSocket.getInetAddress());
 
-            // stream di lettura/scrittura
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
-            String comando;
-            while ((comando = in.readLine()) != null) {
-                System.out.println("SERVER: Comando ricevuto: " + comando);
+            // Legge richiesta del client
+            String richiesta = in.readLine();
+            System.out.println("SERVER: Richiesta ricevuta: " + richiesta);
 
-                String risposta;
-                switch (comando.toLowerCase()) {
-                    case "muovi":
-                        risposta = "Sei riuscito a muoverti!";
-                        break;
-                    case "raccogli":
-                        risposta = "Hai raccolto uno strumento!";
-                        break;
-                    case "attacca":
-                        risposta = "Hai attaccato il drago!";
-                        break;
-                    case "fine":
-                        risposta = "Chiusura connessione...";
-                        out.println(risposta);
-                        clientSocket.close();
-                        System.out.println("SERVER: Connessione chiusa.");
-                        return;
-                    default:
-                        risposta = "Comando non riconosciuto.";
-                }
+            // Invia risposta al client
+            out.println("Richiesta '" + richiesta + "' ricevuta dal server.");
 
-                out.println(risposta);
-            }
+            // Chiusura comunicazione con client
+            clientSocket.close();
+            System.out.println("SERVER: Connessione chiusa con il client.");
 
+        } catch (BindException be) {
+            System.err.println("SERVER: Porta già in uso. Avvio server fallito.");
         } catch (IOException e) {
-            System.err.println("SERVER: Errore connessione o avvio server.");
+            System.err.println("SERVER: Errore nella comunicazione.");
             e.printStackTrace();
         }
+
+        System.out.println("SERVER: Servizio terminato.");
     }
 }
