@@ -16,11 +16,11 @@ public class MainServer {
             Socket clientSocket = server.accept();
             System.out.println("SERVER: Client connesso: " + clientSocket.getInetAddress());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
             // Legge richiesta del client
-            String richiesta = in.readLine();
+            String richiesta = br.readLine();
             System.out.println("SERVER: Richiesta ricevuta: " + richiesta);
 
             // Invia risposta al client
